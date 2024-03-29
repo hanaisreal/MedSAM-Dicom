@@ -80,6 +80,21 @@ class Mainwindow(QMainWindow):
 		self.Coronal_Slice = QLabel(self)
 		self.Coronal_Slice.setObjectName("Coronal_Slice")
 		self.Coronal_Slice.setText('0')
+		
+		# After initializing each Dicom_Widget instance:
+		self.axialSlider = QSlider(Qt.Horizontal)
+		self.sagittalSlider = QSlider(Qt.Horizontal)
+		self.coronalSlider = QSlider(Qt.Horizontal)
+
+		# Connecting the sliders to the Dicom_Widget update method
+		self.axialSlider.valueChanged.connect(lambda value: self.Axial_Widget.update_image_index(value))
+		self.sagittalSlider.valueChanged.connect(lambda value: self.Sagittal_Widget.update_image_index(value))
+		self.coronalSlider.valueChanged.connect(lambda value: self.Coronal_Widget.update_image_index(value))
+
+		# Adding sliders to the layout (make sure you add these to your UI layout so they are visible)
+		self.Dicom_Layout.addWidget(self.axialSlider)
+		self.Dicom_Layout.addWidget(self.sagittalSlider)
+		self.Dicom_Layout.addWidget(self.coronalSlider)
 
 		axial_label_layout = QHBoxLayout()
 		axial_label_layout.addWidget(QLabel('Axial Slice'))
@@ -380,13 +395,13 @@ class Mainwindow(QMainWindow):
 			self.ArrayDicom = self.ArrayDicom.reshape(self.ConstPixelDims, order='F')
 			print('shape of 3D array', self.ArrayDicom.shape, "\n")
 			self.Axial_Widget.ArrayDicom = self.ArrayDicom
-			self.Axial_Widget.remove_segemntation()
+			self.Axial_Widget.remove_segmentation()
 			self.Axial_Widget.update_image()
 			self.Sagittal_Widget.ArrayDicom = self.ArrayDicom
-			self.Sagittal_Widget.remove_segemntation()
+			self.Sagittal_Widget.remove_segmentation()
 			self.Sagittal_Widget.update_image()
 			self.Coronal_Widget.ArrayDicom = self.ArrayDicom
-			self.Coronal_Widget.remove_segemntation()
+			self.Coronal_Widget.remove_segmentation()
 			self.Coronal_Widget.update_image()
 			self.Axial_Slice.setText('O')
 			self.Sagittal_Slice.setText('0')

@@ -154,7 +154,7 @@ class Dicom_Widget(TrackingLabel):
 		self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(0, 0, 0)))
 		self.setFrameShape(QtWidgets.QFrame.NoFrame)
 
-	def remove_segemntation(self):
+	def remove_segmentation(self):
 		self.seg_data = []
 		self.image_index = 0
 		self.initialize = 0
@@ -184,20 +184,40 @@ class Dicom_Widget(TrackingLabel):
 			self.hide_seg = False
 			self.update_image()
 
+	def update_image_index(self, index):
+		self.image_index = index
+		self.update_image()
+
 	def update_image(self):
+		
+		# Determine the correct axis based on the widget's orientation
+		axis = 0
+		if self.label == "Axial":
+			axis = 0
+		elif self.label == "Sagittal":
+			axis = 1
+		elif self.label == "Coronal":
+			axis = 2
+
+		# Clamping the image_index to ensure it's within bounds
+		self.image_index = max(0, min(self.image_index, self.ArrayDicom.shape[axis] - 1))
+		
 		if self.label == "Axial":
 			self.image_data = self.ArrayDicom[:, :, int(self.image_index)]
 			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_COUNTERCLOCKWISE) 
 			self.image_length = self.ArrayDicom.shape[2]
+			slice_img = self.ArrayDicom[self.image_index, :, :]
 		elif self.label == "Sagittal":
 			self.image_data = self.ArrayDicom[int(self.image_index), :, :]
 			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 			self.image_data = cv2.flip(self.image_data, 1)
 			self.image_length = self.ArrayDicom.shape[0]
+			slice_img = self.ArrayDicom[:, self.image_index, :]
 		else:
 			self.image_data = self.ArrayDicom[:, int(self.image_index), :]
 			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 			self.image_length = self.ArrayDicom.shape[1]
+			slice_img = self.ArrayDicom[:, :, self.image_index]	
 		self.image_data = (self.image_data - self.low_hu) / self.high_hu * 256
 		self.image_data[self.image_data < 0] = 0
 		self.image_data[self.image_data > self.thresh_val] = 255 
