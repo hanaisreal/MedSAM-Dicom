@@ -164,16 +164,16 @@ class Dicom_Widget(TrackingLabel):
 			self.hide_seg = True
 			if self.label == "Axial":
 				self.image_data = self.ArrayDicom[:, :, int(self.image_index)]
-				self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE) 
+				self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_COUNTERCLOCKWISE) 
 				self.image_length = self.ArrayDicom.shape[2]
 			elif self.label == "Sagittal":
 				self.image_data = self.ArrayDicom[int(self.image_index), :, :]
-				self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_CLOCKWISE)
+				self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 				self.image_data = cv2.flip(self.image_data, 1)
 				self.image_length = self.ArrayDicom.shape[0]
 			else:
 				self.image_data = self.ArrayDicom[:, int(self.image_index), :]
-				self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_CLOCKWISE)
+				self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 				self.image_length = self.ArrayDicom.shape[1]
 			self.image_data = (self.image_data - self.low_hu) / self.high_hu * 256
 			self.image_data[self.image_data < 0] = 0
@@ -187,16 +187,16 @@ class Dicom_Widget(TrackingLabel):
 	def update_image(self):
 		if self.label == "Axial":
 			self.image_data = self.ArrayDicom[:, :, int(self.image_index)]
-			self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE) 
+			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_COUNTERCLOCKWISE) 
 			self.image_length = self.ArrayDicom.shape[2]
 		elif self.label == "Sagittal":
 			self.image_data = self.ArrayDicom[int(self.image_index), :, :]
-			self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_CLOCKWISE)
+			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 			self.image_data = cv2.flip(self.image_data, 1)
 			self.image_length = self.ArrayDicom.shape[0]
 		else:
 			self.image_data = self.ArrayDicom[:, int(self.image_index), :]
-			self.image_data = cv2.rotate(self.image_data, cv2.cv2.ROTATE_90_CLOCKWISE)
+			self.image_data = cv2.rotate(self.image_data, cv2.ROTATE_90_CLOCKWISE)
 			self.image_length = self.ArrayDicom.shape[1]
 		self.image_data = (self.image_data - self.low_hu) / self.high_hu * 256
 		self.image_data[self.image_data < 0] = 0
@@ -205,18 +205,18 @@ class Dicom_Widget(TrackingLabel):
 		if len(self.seg_data) != 0 and self.hide_seg == False:
 			if self.label == "Axial":
 				seg_slice = self.seg_data[:, :, int(self.image_index)]
-				seg_slice = cv2.rotate(seg_slice, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE)
+				seg_slice = cv2.rotate(seg_slice, cv2.ROTATE_90_COUNTERCLOCKWISE)
 				dim = np.zeros((seg_slice.shape[1],seg_slice.shape[0]))
 				seg_slice = np.stack((dim,seg_slice, dim), axis=2)
 			elif self.label == "Sagittal":
 				seg_slice = self.seg_data[int(self.image_index), :, :]
-				seg_slice = cv2.rotate(seg_slice, cv2.cv2.ROTATE_90_CLOCKWISE)
+				seg_slice = cv2.rotate(seg_slice, cv2.ROTATE_90_CLOCKWISE)
 				seg_slice = cv2.flip(seg_slice, 1)
 				dim = np.zeros((seg_slice.shape[0],seg_slice.shape[1]))
 				seg_slice = np.stack((dim,seg_slice, dim), axis=2)
 			else:
 				seg_slice = self.seg_data[:, int(self.image_index), :]
-				seg_slice = cv2.rotate(seg_slice, cv2.cv2.ROTATE_90_CLOCKWISE)
+				seg_slice = cv2.rotate(seg_slice, cv2.ROTATE_90_CLOCKWISE)
 				dim = np.zeros((seg_slice.shape[0],seg_slice.shape[1]))
 				seg_slice = np.stack((dim,seg_slice, dim), axis=2)	
 
