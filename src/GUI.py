@@ -100,10 +100,11 @@ class Mainwindow(QMainWindow):
 		self.sagittalLayout.addWidget(self.Sagittal_Slice)
 		self.coronalLayout.addWidget(self.Coronal_Slice)
 
-		# Connecting the sliders to the Dicom_Widget update method
-		self.axialSlider.valueChanged.connect(lambda value: self.Axial_Widget.update_image_index(value))
-		self.sagittalSlider.valueChanged.connect(lambda value: self.Sagittal_Widget.update_image_index(value))
-		self.coronalSlider.valueChanged.connect(lambda value: self.Coronal_Widget.update_image_index(value))
+		# Connecting sliders to update image index and label text
+		self.axialSlider.valueChanged.connect(lambda value: [self.Axial_Widget.update_image_index(value), self.updateSliceLabels()])
+		self.sagittalSlider.valueChanged.connect(lambda value: [self.Sagittal_Widget.update_image_index(value), self.updateSliceLabels()])
+		self.coronalSlider.valueChanged.connect(lambda value: [self.Coronal_Widget.update_image_index(value), self.updateSliceLabels()])
+
 
 		self.Axial_Widget.setMinimumHeight(150)  # Example height, adjust as needed
 		self.Sagittal_Widget.setMinimumHeight(150)
@@ -111,7 +112,6 @@ class Mainwindow(QMainWindow):
 		# self.Axial_Widget.setMaximumWidth(150)  # Example width, adjust as needed
 		# self.Sagittal_Widget.setMaximumWidth(150)
 		# self.Coronal_Widget.setMaximumWidth(150)
-
 
 
 		self.Dicom_Layout.addLayout(self.axialLayout)
@@ -402,12 +402,21 @@ class Mainwindow(QMainWindow):
 			self.Coronal_Widget.ArrayDicom = self.ArrayDicom
 			self.Coronal_Widget.remove_segmentation()
 			self.Coronal_Widget.update_image()
-			self.Axial_Slice.setText('O')
-			self.Sagittal_Slice.setText('0')
-			self.Coronal_Slice.setText('0')
 			self.vtk.vti_write == False
 			self.Dir_Status.setText(filename)
 			self.vtk.clean_gui()
+			self.axialSlider.setMaximum(self.ConstPixelDims[2] - 1)  # axial slices are along the Z-axis,parallel to the XY plane
+			self.sagittalSlider.setMaximum(self.ConstPixelDims[0] - 1)  # sagittal slices are along the X-axis, parallel to the YZ plane
+			self.coronalSlider.setMaximum(self.ConstPixelDims[1] - 1)  # Assuming coronal slices are along the Y-axis, parallel to the XZ plane
+			# Update the slice labels for the initial position
+			self.updateSliceLabels(0)  # Assuming starting at the first slice for all views
+
+
+	def updateSliceLabels(self, value=None):  # `value` is optional, only used when called by slider valueChanged
+		# Updating the labels with the current slider value + 1 (to display in a user-friendly 1-indexed format)
+		self.Axial_Slice.setText(f"Axial Slice: {self.axialSlider.value() + 1}/{self.axialSlider.maximum() + 1}")
+		self.Sagittal_Slice.setText(f"Sagittal Slice: {self.sagittalSlider.value() + 1}/{self.sagittalSlider.maximum() + 1}")
+		self.Coronal_Slice.setText(f"Coronal Slice: {self.coronalSlider.value() + 1}/{self.coronalSlider.maximum() + 1}")
 
 	def change_render_color(self):
 		color = QColorDialog.getColor().getRgb()
