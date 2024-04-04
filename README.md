@@ -27,7 +27,7 @@ SEGNet is an open-source, multi-platform bone segmentation and Dicom viewer with
 
 Requirements can be dwonloaded as shown below:
     
-    git clone https://github.com/saivishwak/SEGNet.git 
+    git clone https://github.com/hanaisreal/MedSAM-Dicom.git
     
     cd SEGNet
     
