@@ -32,13 +32,15 @@ import os
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtk.util import numpy_support
+
+# Custom widget imports for DICOM and VTK visualization
 from Dicom_Widget import *
 from VTK_Widget import *
 import Title_Bar
 
 
 class Mainwindow(QMainWindow):
-	""" Main Window Class """
+	"""Main Window Class for the DICOM Viewer"""
 	def __init__(self, parent = None):
 		super().__init__()
 		self.HEIGHT = 600
@@ -52,77 +54,72 @@ class Mainwindow(QMainWindow):
 		self.resize(self.WIDTH, self.HEIGHT)
 		self.Grid_Layout = QGridLayout()
 		self.Grid_Layout.setObjectName('Grid_Layout')
-		self.Grid_Layout.setColumnStretch(0, 1)
-		self.Grid_Layout.setColumnStretch(1, 20)
-		self.Grid_Layout.setColumnStretch(2, 30)
+		self.Grid_Layout.setColumnStretch(0, 1)  #sets the first column (column 0) to have a stretch factor of 1
+		self.Grid_Layout.setColumnStretch(1, 4)  #sets the second column (column 1) to have a stretch factor of 3
+		self.Grid_Layout.setColumnStretch(2, 4)
 		self.Grid_Layout.setColumnStretch(3, 1)
 		self.frame = QFrame()
 		self.frame.setObjectName('frame')
 
-		# added 
+
+		
 		# --------------- Dicom_Widget -----------
 		self.Dicom_Layout = QVBoxLayout()
+  		# Dicom_Widget instances for Axial, Sagittal, and Coronal views
+	
+		# Axial Viewer Layout
+		self.axialLayout = QVBoxLayout()
+		self.axialSlider = QSlider(Qt.Horizontal)
 		self.Axial_Widget = Dicom_Widget(self, "Axial")
 		self.Axial_Widget.photoClicked.connect(self.photoClicked_A)
-		self.Axial_Widget.setObjectName('Axial_Widget')
+		self.axialLayout.addWidget(self.axialSlider)  # Add the slider to the layout first
+		self.axialLayout.addWidget(self.Axial_Widget)  # Then add the viewer widget
+		
+		# Similar setup for Sagittal and Coronal viewers
+		self.sagittalLayout = QVBoxLayout()
+		self.sagittalSlider = QSlider(Qt.Horizontal)
 		self.Sagittal_Widget = Dicom_Widget(self, "Sagittal")
 		self.Sagittal_Widget.photoClicked.connect(self.photoClicked_S)
-		self.Sagittal_Widget.setObjectName('Sagittal_Widget')
+		self.sagittalLayout.addWidget(self.sagittalSlider)
+		self.sagittalLayout.addWidget(self.Sagittal_Widget)
+
+		self.coronalLayout = QVBoxLayout()
+		self.coronalSlider = QSlider(Qt.Horizontal)
 		self.Coronal_Widget = Dicom_Widget(self, "Coronal")
 		self.Coronal_Widget.photoClicked.connect(self.photoClicked_C)
-		self.Coronal_Widget.setObjectName('Coronal_Widget')
+		self.coronalLayout.addWidget(self.coronalSlider)
+		self.coronalLayout.addWidget(self.Coronal_Widget)
 
-		self.Axial_Slice = QLabel(self)
-		self.Axial_Slice.setObjectName("Axial_Slice")
-		self.Axial_Slice.setText('0')
-		self.Sagittal_Slice = QLabel(self)
-		self.Sagittal_Slice.setObjectName("Sagittal_Slice")
-		self.Sagittal_Slice.setText('0')
-		self.Coronal_Slice = QLabel(self)
-		self.Coronal_Slice.setObjectName("Coronal_Slice")
-		self.Coronal_Slice.setText('0')
-		
-		# After initializing each Dicom_Widget instance:
-		self.axialSlider = QSlider(Qt.Horizontal)
-		self.sagittalSlider = QSlider(Qt.Horizontal)
-		self.coronalSlider = QSlider(Qt.Horizontal)
+		# Initialize the labels for displaying the slice numbers
+		self.Axial_Slice = QLabel("Axial Slice")
+		self.Sagittal_Slice = QLabel("Sagittal Slice")
+		self.Coronal_Slice = QLabel("Coronal Slice")
+
+		# Add them to their respective layouts
+		self.axialLayout.addWidget(self.Axial_Slice)
+		self.sagittalLayout.addWidget(self.Sagittal_Slice)
+		self.coronalLayout.addWidget(self.Coronal_Slice)
 
 		# Connecting the sliders to the Dicom_Widget update method
 		self.axialSlider.valueChanged.connect(lambda value: self.Axial_Widget.update_image_index(value))
 		self.sagittalSlider.valueChanged.connect(lambda value: self.Sagittal_Widget.update_image_index(value))
 		self.coronalSlider.valueChanged.connect(lambda value: self.Coronal_Widget.update_image_index(value))
 
-		# Adding sliders to the layout (make sure you add these to your UI layout so they are visible)
-		self.Dicom_Layout.addWidget(self.axialSlider)
-		self.Dicom_Layout.addWidget(self.sagittalSlider)
-		self.Dicom_Layout.addWidget(self.coronalSlider)
+		self.Axial_Widget.setMinimumHeight(150)  # Example height, adjust as needed
+		self.Sagittal_Widget.setMinimumHeight(150)
+		self.Coronal_Widget.setMinimumHeight(150)
+		# self.Axial_Widget.setMaximumWidth(150)  # Example width, adjust as needed
+		# self.Sagittal_Widget.setMaximumWidth(150)
+		# self.Coronal_Widget.setMaximumWidth(150)
 
-		axial_label_layout = QHBoxLayout()
-		axial_label_layout.addWidget(QLabel('Axial Slice'))
-		axial_label_layout.insertStretch(1,500)
-		axial_label_layout.addWidget(self.Axial_Slice)
 
-		sagittal_label_layout = QHBoxLayout()
-		sagittal_label_layout.addWidget(QLabel('Sagittal Slice'))
-		sagittal_label_layout.insertStretch(1,500)
-		sagittal_label_layout.addWidget(self.Sagittal_Slice)
 
-		coronal_label_layout = QHBoxLayout()
-		coronal_label_layout.addWidget(QLabel('Coronal Slice'))
-		coronal_label_layout.insertStretch(1,500)
-		coronal_label_layout.addWidget(self.Coronal_Slice)
+		self.Dicom_Layout.addLayout(self.axialLayout)
+		self.Dicom_Layout.addLayout(self.sagittalLayout)
+		self.Dicom_Layout.addLayout(self.coronalLayout)
 
-		self.Dicom_Layout.addLayout(axial_label_layout)
-		self.Dicom_Layout.addWidget(self.Axial_Widget)
-		#self.Dicom_Layout.addWidget(self.Axial_Slice)
-		self.Dicom_Layout.addLayout(sagittal_label_layout)
-		#self.Dicom_Layout.addWidget(QLabel('Sagittal Slice'))
-		self.Dicom_Layout.addWidget(self.Sagittal_Widget)
-		#self.Dicom_Layout.addWidget(self.Sagittal_Slice)
-		self.Dicom_Layout.addLayout(coronal_label_layout)
-		#self.Dicom_Layout.addWidget(QLabel('Coronal Slice'))
-		self.Dicom_Layout.addWidget(self.Coronal_Widget)
-		#self.Dicom_Layout.addWidget(self.Coronal_Slice)
+
+
 
 
 		# ---------------- VTK Widget --------------
@@ -279,6 +276,7 @@ class Mainwindow(QMainWindow):
 		self.Grid_Layout.addWidget(self.vtk, 1, 2, 1, 1)
 		self.Grid_Layout.addLayout(self.VTK_Tool_Layout, 1, 3, 1, 1)
 		self.Grid_Layout.addWidget(self.Dir_Status, 2, 0, 1, 4)
+
 
 		self.frame.setLayout(self.Grid_Layout)
 		self.setContentsMargins(0, 0, 0, 0)
