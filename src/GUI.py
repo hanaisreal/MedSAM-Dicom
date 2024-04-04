@@ -44,11 +44,11 @@ class Mainwindow(QMainWindow):
 		self.HEIGHT = 600
 		self.WIDTH = 900
 		self.PATH = ""
-		self.setWindowTitle('SEGNet')
+		self.setWindowTitle('INFINITT Dicom Viewer')
 		self.InitUi()
 
 	def InitUi(self):
-		self.setWindowFlags(Qt.FramelessWindowHint);
+		self.setWindowFlags(Qt.FramelessWindowHint)
 		self.resize(self.WIDTH, self.HEIGHT)
 		self.Grid_Layout = QGridLayout()
 		self.Grid_Layout.setObjectName('Grid_Layout')
@@ -59,6 +59,7 @@ class Mainwindow(QMainWindow):
 		self.frame = QFrame()
 		self.frame.setObjectName('frame')
 
+		# added 
 		# --------------- Dicom_Widget -----------
 		self.Dicom_Layout = QVBoxLayout()
 		self.Axial_Widget = Dicom_Widget(self, "Axial")

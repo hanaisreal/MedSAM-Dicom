@@ -35,21 +35,30 @@ import Title_Bar
 
 
 if __name__ == "__main__":
-	app = QApplication(sys.argv)
+	app = QApplication(sys.argv) # Initialize a new QApplication instance, passing in command line arguments
 	app.setStyleSheet(open('style.css').read())
-	if os.sep=='\\':
-		splash_pix = QPixmap('..\\Images\\splash.png')
-	else:
-		splash_pix = QPixmap('../Images/splash.png')
 
+
+	############################################
+	# Load splash screen image
+	if os.sep=='\\':
+		splash_pix = QPixmap('..\\Images\\INFINITT_logo.png')
+	else:
+		splash_pix = QPixmap('../Images/INFINITT_logo.png')
+
+	# Display the splash screen with an option to stay on top and set its mask for transparency effects
 	splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
 	splash.setMask(splash_pix.mask())
 	splash.show()
-	app.processEvents()
+	app.processEvents()  # Process pending events to ensure the splash screen shows immediately
 
 	time.sleep(2)
-	splash.close()
-
+	splash.close()  # Close the splash screen
+	############################################
+ 
+ 
+	############################################
+	# Set the application icon
 	app_icon = QIcon()
 	if os.sep=='\\':
 		app_icon.addFile('..\\Images\\Logo.png', QSize(16,16))
@@ -57,7 +66,8 @@ if __name__ == "__main__":
 		app_icon.addFile('../Images/Logo.png', QSize(16,16))
 		
 	app.setWindowIcon(app_icon)
+	############################################
 
-	window = Mainwindow()
-	Title_Bar.window = window
-	sys.exit(app.exec_())
+	window = Mainwindow()  # Create an instance of the main window
+	Title_Bar.window = window  # Set the window attribute in the Title_Bar module to this instance
+	sys.exit(app.exec_())  # Start the application's event loop and exit when the main window closes
